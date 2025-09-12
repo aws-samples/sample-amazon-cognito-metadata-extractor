@@ -12,7 +12,7 @@ This solution facilitates integration between Amazon Cognito User Pools(SP) and 
 ## Deployment steps
 ###### Clone the project
 ```sh
-git clone https://github.com/aws-samples/sample-amazon-cognito-metadata-extractor.git
+git clone https://github.com/aws-samples/sample-amazon-cognito-metadata-extractor.git && cd sample-amazon-cognito-metadata-extractor
 ```
 # 1. Create a new virtual environment (recommended):
 

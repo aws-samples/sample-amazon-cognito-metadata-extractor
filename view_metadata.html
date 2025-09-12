@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cognito SAML Metadata Viewer</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { background: #232f3e; color: white; padding: 15px; border-radius: 5px; }
+        .form-container { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .download-btn { background: #ff9900; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin: 10px 0; }
+        .xml-container { background: #f5f5f5; border: 1px solid #ddd; padding: 15px; border-radius: 5px; overflow-x: auto; display: none; }
+        pre { margin: 0; white-space: pre-wrap; }
+        input, select { padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+        label { font-weight: bold; }
+        .error { color: red; font-weight: bold; }
+        .note { background: #fff3cd; padding: 10px; border-left: 4px solid #ffc107; margin-bottom: 15px; }
+        .toggle-container { margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Amazon Cognito SAML Metadata Viewer</h1>
+    </div>
+    
+    <div class="note">
+        <strong>Note:</strong> If you're opening this file directly from your filesystem (using file:// protocol),
+        you may encounter CORS issues. To avoid this, either:
+        <ol>
+            <li>Host this file on a local web server</li>
+            <li>Use the Python script <code>serve_test_page.py</code> to serve this page</li>
+            <li>Use a browser extension to disable CORS for testing</li>
+        </ol>
+    </div>
+    
+    <div class="form-container">
+        <h2>Enter API Details</h2>
+        <label for="api-endpoint">API Endpoint:</label>
+        <input type="text" id="api-endpoint" placeholder="https://your-api-id.execute-api.region.amazonaws.com/prod/metadata" />
+        
+        <label for="user-pool-id">User Pool ID:</label>
+        <input type="text" id="user-pool-id" placeholder="us-east-1_example" />
+        
+        <label for="provider-name">Provider Name (Optional):</label>
+        <input type="text" id="provider-name" placeholder="Azure-EntraID (leave empty for user pool metadata only)" />
+        
+
+        
+        <button class="download-btn" onclick="fetchMetadata()">Fetch Metadata</button>
+    </div>
+    
+    <div id="error-container" class="error" style="display: none;"></div>
+    
+    <div id="xml-container" class="xml-container">
+        <h2>SAML Metadata XML</h2>
+        <button class="download-btn" onclick="downloadXML()">Download XML</button>
+        <pre id="xml-content"></pre>
+    </div>
+    
+    <script>
+        function fetchMetadata() {
+            const apiEndpoint = document.getElementById('api-endpoint').value.trim();
+            const userPoolId = document.getElementById('user-pool-id').value.trim();
+            const providerName = document.getElementById('provider-name').value.trim();
+            
+            if (!apiEndpoint || !userPoolId) {
+                showError("Please fill in API Endpoint and User Pool ID");
+                return;
+            }
+            
+            // Construct the URL
+            let url = apiEndpoint;
+            if (!url.endsWith('/')) url += '/';
+            url += userPoolId;
+            if (providerName) {
+                url += `/${providerName}`;
+            }
+            
+            document.getElementById('error-container').style.display = 'none';
+            document.getElementById('xml-container').style.display = 'none';
+            
+            // Prepare headers
+            const headers = {
+                'Accept': 'application/xml, application/json, */*'
+            };
+            
+            // Fetch the metadata
+            fetch(url, {
+                method: 'GET',
+                headers: headers
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        try {
+                            // Try to parse as JSON for error messages
+                            const errorJson = JSON.parse(text);
+                            throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorJson.error || text}`);
+                        } catch (e) {
+                            if (e instanceof SyntaxError) {
+                                // If not valid JSON, just show the text
+                                throw new Error(`HTTP error! Status: ${response.status}, Response: ${text}`);
+                            } else {
+                                throw e; // Re-throw the error with the parsed message
+                            }
+                        }
+                    });
+                }
+                return response.text();
+            })
+            .then(data => {
+                document.getElementById('xml-content').textContent = data;
+                document.getElementById('xml-container').style.display = 'block';
+            })
+            .catch(error => {
+                showError(`Error fetching metadata: ${error.message}`);
+            });
+        }
+        
+        function downloadXML() {
+            const userPoolId = document.getElementById('user-pool-id').value.trim();
+            const providerName = document.getElementById('provider-name').value.trim();
+            const xmlContent = document.getElementById('xml-content').textContent;
+            
+            if (!xmlContent) {
+                showError("No XML content to download");
+                return;
+            }
+            
+            const blob = new Blob([xmlContent], { type: 'application/xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${userPoolId}_${providerName}_metadata.xml`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        function showError(message) {
+            const errorContainer = document.getElementById('error-container');
+            errorContainer.textContent = message;
+            errorContainer.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

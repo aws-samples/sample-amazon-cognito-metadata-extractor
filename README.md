@@ -1,6 +1,14 @@
 # Amazon Cognito Metadata Extractor
 
-This solution facilitates integration between Amazon Cognito User Pools(SP) and external Identity Providers(IdP). The deployed API enables extraction of general SP metadata, including entityID, AssertionConsumerService, SingleLogoutService, and NameIDFormat from a specified User Pool. Additionally, it can retrieve SAML signing and encryption certificate details from the designated User Pool and provider. 
+This solution facilitates integration between Amazon Cognito User Pools(SP) and external Identity Providers(IdP). The deployed API enables extraction of general SP metadata, including entityID, AssertionConsumerService, SingleLogoutService, and NameIDFormat from a specified User Pool. Additionally, it can retrieve SAML signing and encryption certificate details from the designated User Pool and provider.
+
+## Architecture
+
+![Serverless Architecture](Images/Serverless%20Architecture.png)
+
+The streamlined metadata exchange and integration process between Amazon Cognito and an external SAML identity provider is illustrated below:
+
+![Simplified Workflow](Images/Simplified%20workflow.png) 
 
 ## Pre-requisites
 - AWS account and permissions to create CloudFormation stacks, Cognito resources and lambda functions

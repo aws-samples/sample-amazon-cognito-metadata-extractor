@@ -4,11 +4,11 @@ This solution facilitates integration between Amazon Cognito User Pools(SP) and 
 
 ## Architecture
 
-![Serverless Architecture](Images/Serverless%20Architecture.png)
+![Serverless Architecture](Images/serverless-architecture.png)
 
 The streamlined metadata exchange and integration process between Amazon Cognito and an external SAML identity provider is illustrated below:
 
-![Simplified Workflow](Images/Simplified%20workflow.png) 
+![Simplified Workflow](Images/simplified-workflow.png) 
 
 ## Pre-requisites
 - AWS account and permissions to create CloudFormation stacks, Cognito resources and lambda functions

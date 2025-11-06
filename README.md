@@ -113,7 +113,7 @@ Or with SAML provider:
 ```
 https://myapi.execute-api.us-east-1.amazonaws.com/prod/metadata/myuserpoolid/mysamlprovidername
 ```
-
+![Metadata extraction demo](metadata-extraction.gif) 
 ## Option 2: Using curl
 ```sh
 # Set your values
@@ -169,6 +169,8 @@ Remember:
     - IAM roles and policies
     - CloudWatch Log groups
 
+## Disclaimer
+This repository is for demonstration and reference purposes only. The code and configurations provided are not intended for production use without proper review, testing, and security considerations.
 
 ## Security
 

@@ -4,4 +4,4 @@ botocore==1.31.38
 
 # XML Processing
 defusedxml==0.7.1
-lxml==4.9.3
+lxml==6.1.0
